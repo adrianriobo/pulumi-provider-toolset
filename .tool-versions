@@ -1,0 +1,9 @@
+jq 1.6
+dotnet-core 7.0.201
+java temurin-8.0.352+8
+golang 1.19.2
+golangci-lint 1.51.2
+gradle 7.6.1
+nodejs 18.14.2
+pulumi 3.55.0
+yarn 1.22.19

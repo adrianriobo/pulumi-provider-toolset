@@ -1,41 +1,33 @@
-FROM docker.io/library/eclipse-temurin:8u352-b08-jdk
+FROM quay.io/centos/centos:stream9
 
-ENV GO_VERSION 1.19.4
-ENV GOCI_LINT_VERSION 1.50.1
-ENV JQ_VERSION 1.50.1
+LABEL MAINTAINER "Adrian Riobo" "<ariobolo@redhat.com>"
+
+ENV ASDF_VERSION 0.11.2
+
+# TODO create asdf plugin for pulimictl
 ENV PULUMICTL_VERSION v0.0.42
-ENV PULUMI_VERSION v3.55.0
-ENV GRADLE_VERSION 7.6
-ENV NODE_VERSION v18.12.1
+RUN curl -LO https://github.com/pulumi/pulumictl/releases/download/${PULUMICTL_VERSION}/pulumictl-${PULUMICTL_VERSION}-linux-amd64.tar.gz \
+    && tar -C /usr/local/bin -xzf pulumictl-${PULUMICTL_VERSION}-linux-amd64.tar.gz \
+    && rm pulumictl-${PULUMICTL_VERSION}-linux-amd64.tar.gz 
 
-ENV PATH ${PATH}:/usr/local/go/bin:/usr/local/dotnet:/usr/local/pulumi:/usr/local/gradle-${GRADLE_VERSION}/bin:/usr/local/node-${NODE_VERSION}-linux-x64/bin
+ENV PATH=$PATH:/root/.asdf/shims
 #https://github.com/dotnet/core/blob/main/Documentation/build-and-install-rhel6-prerequisites.md
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT 1
 
-RUN apt-get update \
-    && apt-get install -y unzip python3 python3-pip \
-    && curl -LO https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz \
-    && tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz \
-    && rm go${GO_VERSION}.linux-amd64.tar.gz \
-    && curl -LO https://github.com/golangci/golangci-lint/releases/download/v${GOCI_LINT_VERSION}/golangci-lint-${GOCI_LINT_VERSION}-linux-386.tar.gz \
-    && tar -C /usr/local/bin --strip-components 1 -xzf golangci-lint-${GOCI_LINT_VERSION}-linux-386.tar.gz \
-    && rm golangci-lint-${GOCI_LINT_VERSION}-linux-386.tar.gz \
-    && curl -L https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 -o /usr/local/bin/jq \
-    && chmod +x /usr/local/bin/jq \
-    && curl -LO https://github.com/pulumi/pulumictl/releases/download/${PULUMICTL_VERSION}/pulumictl-${PULUMICTL_VERSION}-linux-amd64.tar.gz \
-    && tar -C /usr/local/bin -xzf pulumictl-${PULUMICTL_VERSION}-linux-amd64.tar.gz \
-    && rm pulumictl-${PULUMICTL_VERSION}-linux-amd64.tar.gz \
-    && curl -LO https://download.visualstudio.microsoft.com/download/pr/7fe73a07-575d-4cb4-b2d3-c23d89e5085f/d8b2b7e1c0ed99c1144638d907c6d152/dotnet-sdk-7.0.101-linux-x64.tar.gz \
-    && mkdir -p /usr/local/dotnet \
-    && tar -C /usr/local/dotnet -xzf dotnet-sdk-7.0.101-linux-x64.tar.gz \
-    && rm dotnet-sdk-7.0.101-linux-x64.tar.gz \
-    && curl -LO https://github.com/pulumi/pulumi/releases/download/${PULUMI_VERSION}/pulumi-${PULUMI_VERSION}-linux-x64.tar.gz \
-    && tar -C /usr/local -xzf pulumi-${PULUMI_VERSION}-linux-x64.tar.gz \
-    && rm pulumi-${PULUMI_VERSION}-linux-x64.tar.gz \
-    && curl -LO https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
-    && unzip gradle-${GRADLE_VERSION}-bin.zip -d /usr/local \
-    && rm gradle-${GRADLE_VERSION}-bin.zip \
-    && curl -LO https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-x64.tar.xz \
-    && tar -C /usr/local -xf node-${NODE_VERSION}-linux-x64.tar.xz \
-    && rm node-${NODE_VERSION}-linux-x64.tar.xz \
-    && npm install --global yarn
+COPY .tool-versions /root/
+
+RUN dnf install -y git unzip which make python3-pip \
+    && git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.2 \
+    && . $HOME/.asdf/asdf.sh \
+    && asdf plugin-add dotnet-core https://github.com/emersonsoares/asdf-dotnet-core.git \
+    && asdf plugin-add jq https://github.com/AZMCode/asdf-jq.git \
+    && asdf plugin-add java https://github.com/halcyon/asdf-java.git \
+    # && asdf plugin-add python \
+    && asdf plugin-add golang https://github.com/kennyp/asdf-golang.git \
+    && asdf plugin add golangci-lint https://github.com/hypnoglow/asdf-golangci-lint.git \
+    && asdf plugin-add pulumi https://github.com/canha/asdf-pulumi.git \
+    && asdf plugin-add gradle https://github.com/rfrancis/asdf-gradle.git \
+    && asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git \
+    && asdf plugin-add yarn \
+    && asdf install
+
