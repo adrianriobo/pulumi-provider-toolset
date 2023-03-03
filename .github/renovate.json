@@ -6,8 +6,14 @@
       "group:allNonMajor"
   ],
   "automerge": false,
-  "schedule": [
-      "every day"
+  "schedule": ["every weekday"],
+  "branchTopic":"{{{depNameSanitized}}}-{{{newMajor}}}{{#if separateMinorPatch}}{{#if isPatch}}_{{{newMinor}}}{{/if}}{{/if}}_x{{#if isLockfileUpdate}}-lockfile{{/if}}",
+  "packageRules": [
+    {
+      "dockerfile": {
+        "fileMatch": ["Containerfile"]
+      }
+    }
   ]
 }
 
