@@ -7,8 +7,8 @@
   ],
   "automerge": false,
   "schedule": ["every weekday"],
-  "branchPrefix":"renovate_",
-  "branchTopic":"{{{depNameSanitized}}}-{{{newMajor}}}{{#if separateMinorPatch}}{{#if isPatch}}_{{{newMinor}}}{{/if}}{{/if}}_x{{#if isLockfileUpdate}}-lockfile{{/if}}",
+  "branchPrefix":"renovate-",
+  "branchTopic":"{{{depNameSanitized}}}-{{{newMajor}}}{{#if separateMinorPatch}}{{#if isPatch}}-{{{newMinor}}}{{/if}}{{/if}}-x{{#if isLockfileUpdate}}-lockfile{{/if}}",
   "dockerfile": {
     "fileMatch": ["Containerfile"]
   }
