@@ -4,6 +4,6 @@ java openjdk-19.0.2
 golang 1.19.2
 golangci-lint 1.51.2
 gradle 7.6.1
-nodejs 18.14.2
+nodejs 20.18.0
 pulumi 3.55.0
 yarn 1.22.19
