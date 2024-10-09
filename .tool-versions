@@ -1,5 +1,5 @@
 jq 1.6
-dotnet-core 7.0.201
+dotnet-core 8.0.403
 java openjdk-19.0.2
 golang 1.19.2
 golangci-lint 1.51.2
